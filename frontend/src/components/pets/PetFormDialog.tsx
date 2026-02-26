@@ -2,7 +2,21 @@ import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { petService } from '@/services/petService'
 import { speciesService } from '@/services/speciesService'
-import type { Pet, CreatePetDto, UpdatePetDto } from '@/types/pet'
+import type { Pet, PetSex, PetSize, CreatePetDto, UpdatePetDto } from '@/types/pet'
+
+interface PetFormState {
+  name: string
+  clientId: string
+  speciesTypeId: string
+  breedId: string
+  sex: PetSex
+  size: PetSize
+  color: string
+  birthDate: string
+  isAlive: boolean
+  deathDate: string
+  photoUrl: string
+}
 import {
   Dialog,
   DialogContent,
@@ -30,7 +44,7 @@ interface PetFormDialogProps {
 
 export function PetFormDialog({ open, onOpenChange, pet, mode, preselectedClientId }: PetFormDialogProps) {
   const queryClient = useQueryClient()
-  const [formData, setFormData] = useState<CreatePetDto | UpdatePetDto>({
+  const [formData, setFormData] = useState<PetFormState>({
     name: '',
     clientId: preselectedClientId || '',
     speciesTypeId: '',

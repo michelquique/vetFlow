@@ -4,7 +4,26 @@ import { consultationService } from '@/services/consultationService'
 import { petService } from '@/services/petService'
 import { clientService } from '@/services/clientService'
 import { doctorService } from '@/services/doctorService'
-import type { Consultation, CreateConsultationDto, UpdateConsultationDto } from '@/types/consultation'
+import type { Consultation, ConsultationType, ConsultationStatus, CreateConsultationDto, UpdateConsultationDto } from '@/types/consultation'
+
+interface ConsultationFormState {
+  petId: string
+  clientId: string
+  doctorId: string
+  date: string
+  type: ConsultationType
+  reason: string
+  symptoms: string
+  diagnosis: string
+  treatment: string
+  exams: string
+  nextVisitDate: string
+  nextVisitType: string
+  nextTreatment: string
+  amount: number
+  paid: number
+  status: ConsultationStatus
+}
 import {
   Dialog,
   DialogContent,
@@ -41,7 +60,7 @@ export function ConsultationFormDialog({
   preselectedDoctorId,
 }: ConsultationFormDialogProps) {
   const queryClient = useQueryClient()
-  const [formData, setFormData] = useState<CreateConsultationDto | UpdateConsultationDto>({
+  const [formData, setFormData] = useState<ConsultationFormState>({
     petId: preselectedPetId || '',
     clientId: preselectedClientId || '',
     doctorId: preselectedDoctorId || '',
@@ -53,7 +72,7 @@ export function ConsultationFormDialog({
     treatment: '',
     exams: '',
     nextVisitDate: '',
-    nextVisitType: undefined,
+    nextVisitType: '',
     nextTreatment: '',
     amount: 0,
     paid: 0,
@@ -95,7 +114,7 @@ export function ConsultationFormDialog({
         nextVisitDate: consultation.nextVisitDate
           ? new Date(consultation.nextVisitDate).toISOString().split('T')[0]
           : '',
-        nextVisitType: consultation.nextVisitType,
+        nextVisitType: consultation.nextVisitType ?? '',
         nextTreatment: consultation.nextTreatment || '',
         amount: Number(consultation.amount) || 0,
         paid: Number(consultation.paid) || 0,
@@ -114,7 +133,7 @@ export function ConsultationFormDialog({
         treatment: '',
         exams: '',
         nextVisitDate: '',
-        nextVisitType: undefined,
+        nextVisitType: '',
         nextTreatment: '',
         amount: 0,
         paid: 0,
@@ -170,12 +189,14 @@ export function ConsultationFormDialog({
 
     const submitData = {
       ...formData,
+      date: new Date(formData.date),
+      nextVisitDate: formData.nextVisitDate ? new Date(formData.nextVisitDate) : undefined,
       reason: formData.reason || undefined,
       symptoms: formData.symptoms || undefined,
       diagnosis: formData.diagnosis || undefined,
       treatment: formData.treatment || undefined,
       exams: formData.exams || undefined,
-      nextVisitDate: formData.nextVisitDate || undefined,
+      nextVisitType: formData.nextVisitType || undefined,
       nextTreatment: formData.nextTreatment || undefined,
     }
 
@@ -402,8 +423,8 @@ export function ConsultationFormDialog({
                 <Label htmlFor="nextVisitType">Tipo Próxima Visita</Label>
                 <Select
                   id="nextVisitType"
-                  value={formData.nextVisitType || ''}
-                  onChange={(e) => setFormData({ ...formData, nextVisitType: e.target.value as 'Curativa' | 'Profilactica' | undefined })}
+                  value={formData.nextVisitType}
+                  onChange={(e) => setFormData({ ...formData, nextVisitType: e.target.value })}
                 >
                   <option value="">No especificado</option>
                   <option value="Curativa">Curativa</option>

@@ -1,17 +1,10 @@
-import { Pet } from './pet'
-import { Client } from './client'
-import { Doctor } from './doctor'
+import type { Pet } from './pet'
+import type { Client } from './client'
+import type { Doctor } from './doctor'
 
-export enum ConsultationType {
-  CURATIVA = 'Curativa',
-  PROFILACTICA = 'Profilactica',
-}
+export type ConsultationType = 'Curativa' | 'Profilactica'
 
-export enum ConsultationStatus {
-  ACTIVE = 'Active',
-  COMPLETED = 'Completed',
-  CANCELLED = 'Cancelled',
-}
+export type ConsultationStatus = 'Active' | 'Completed' | 'Cancelled'
 
 export interface Consultation {
   id: string

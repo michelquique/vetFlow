@@ -1,10 +1,7 @@
-import { Pet } from './pet'
-import { Consultation } from './consultation'
+import type { Pet } from './pet'
+import type { Consultation } from './consultation'
 
-export enum ClientType {
-  NORMAL = 'Normal',
-  VIP = 'VIP',
-}
+export type ClientType = 'Normal' | 'VIP'
 
 export interface Client {
   id: string

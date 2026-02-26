@@ -1,18 +1,11 @@
-import { Client } from './client'
-import { SpeciesType } from './species'
-import { Breed } from './breed'
-import { Consultation } from './consultation'
+import type { Client } from './client'
+import type { SpeciesType } from './species'
+import type { Breed } from './breed'
+import type { Consultation } from './consultation'
 
-export enum PetSex {
-  MALE = 'M',
-  FEMALE = 'F',
-}
+export type PetSex = 'M' | 'F'
 
-export enum PetSize {
-  SMALL = 'S',
-  MEDIUM = 'M',
-  LARGE = 'L',
-}
+export type PetSize = 'S' | 'M' | 'L'
 
 export interface Pet {
   id: string

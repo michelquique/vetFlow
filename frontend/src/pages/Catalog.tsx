@@ -5,7 +5,6 @@ import { breedService } from '@/services/breedService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PawPrint, Plus, Edit2, Trash2, ChevronRight, AlertTriangle, Loader2 } from 'lucide-react'
 import { SpeciesFormDialog } from '@/components/catalog/SpeciesFormDialog'
 import { BreedFormDialog } from '@/components/catalog/BreedFormDialog'
@@ -39,7 +38,7 @@ export default function Catalog() {
     queryFn: () => speciesService.getAll(),
   })
 
-  const { data: allBreeds, isLoading: breedsLoading } = useQuery({
+  const { data: allBreeds } = useQuery({
     queryKey: ['breeds'],
     queryFn: () => breedService.getAll(),
   })

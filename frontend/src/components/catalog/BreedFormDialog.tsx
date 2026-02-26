@@ -85,7 +85,7 @@ export function BreedFormDialog({ open, onOpenChange, breed, mode, preselectedSp
     e.preventDefault()
     setError(null)
 
-    if (!formData.name.trim()) {
+    if (!(formData.name ?? '').trim()) {
       setError('El nombre es requerido')
       return
     }

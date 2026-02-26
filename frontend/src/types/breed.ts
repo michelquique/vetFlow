@@ -1,5 +1,5 @@
-import { SpeciesType } from './species'
-import { Pet } from './pet'
+import type { SpeciesType } from './species'
+import type { Pet } from './pet'
 
 export interface Breed {
   id: string

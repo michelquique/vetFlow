@@ -2,6 +2,15 @@ import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { doctorService } from '@/services/doctorService'
 import type { Doctor, CreateDoctorDto, UpdateDoctorDto } from '@/types/doctor'
+
+interface DoctorFormState {
+  name: string
+  specialty: string
+  licenseNumber: string
+  phone: string
+  email: string
+  isActive: boolean
+}
 import {
   Dialog,
   DialogContent,
@@ -26,7 +35,7 @@ interface DoctorFormDialogProps {
 
 export function DoctorFormDialog({ open, onOpenChange, doctor, mode }: DoctorFormDialogProps) {
   const queryClient = useQueryClient()
-  const [formData, setFormData] = useState<CreateDoctorDto | UpdateDoctorDto>({
+  const [formData, setFormData] = useState<DoctorFormState>({
     name: '',
     specialty: '',
     licenseNumber: '',

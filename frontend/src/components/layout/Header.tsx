@@ -2,7 +2,6 @@ import { Search, Bell, Settings, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/context/AuthContext'
-import { Badge } from '@/components/ui/badge'
 
 interface HeaderProps {
   sidebarCollapsed: boolean

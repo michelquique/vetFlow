@@ -1,4 +1,4 @@
-import { Consultation } from './consultation'
+import type { Consultation } from './consultation'
 
 export interface Doctor {
   id: string
