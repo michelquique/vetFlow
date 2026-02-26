@@ -32,7 +32,7 @@ export interface CreateClientDto {
   discount?: number
 }
 
-export interface UpdateClientDto extends Partial<CreateClientDto> {}
+export interface UpdateClientDto extends Partial<CreateClientDto> { }
 
 export interface SearchClientDto {
   page?: number

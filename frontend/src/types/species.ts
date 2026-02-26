@@ -16,4 +16,4 @@ export interface CreateSpeciesDto {
   description?: string
 }
 
-export interface UpdateSpeciesDto extends Partial<CreateSpeciesDto> {}
+export interface UpdateSpeciesDto extends Partial<CreateSpeciesDto> { }

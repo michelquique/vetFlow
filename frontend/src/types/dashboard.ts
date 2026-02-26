@@ -10,4 +10,4 @@ export interface DashboardStats {
   todayConsultations: number
 }
 
-export interface RecentConsultation extends Consultation {}
+export interface RecentConsultation extends Consultation { }

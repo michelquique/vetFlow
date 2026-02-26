@@ -18,4 +18,4 @@ export interface CreateBreedDto {
   description?: string
 }
 
-export interface UpdateBreedDto extends Partial<CreateBreedDto> {}
+export interface UpdateBreedDto extends Partial<CreateBreedDto> { }
