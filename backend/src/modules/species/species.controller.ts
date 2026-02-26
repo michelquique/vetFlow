@@ -24,7 +24,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('species')
 export class SpeciesController {
-  constructor(private readonly speciesService: SpeciesService) {}
+  constructor(private readonly speciesService: SpeciesService) { }
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo tipo de especie' })
@@ -58,6 +58,7 @@ export class SpeciesController {
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar una especie' })
   @ApiResponse({ status: 200, description: 'Especie eliminada exitosamente' })
+  @ApiResponse({ status: 409, description: 'La especie tiene razas o mascotas asociadas' })
   remove(@Param('id') id: string) {
     return this.speciesService.remove(id);
   }

@@ -1,6 +1,12 @@
 import { api } from './api'
 import type { Breed, CreateBreedDto, UpdateBreedDto } from '@/types/breed'
 
+export interface SearchBreedParams {
+  speciesTypeId?: string
+  search?: string
+  limit?: number
+}
+
 export const breedService = {
   async getAll(): Promise<Breed[]> {
     const response = await api.get<Breed[]>('/breeds')
@@ -8,7 +14,12 @@ export const breedService = {
   },
 
   async getBySpecies(speciesId: string): Promise<Breed[]> {
-    const response = await api.get<Breed[]>(`/breeds/species/${speciesId}`)
+    const response = await api.get<Breed[]>('/breeds', { params: { speciesTypeId: speciesId } })
+    return response.data
+  },
+
+  async search(params: SearchBreedParams): Promise<Breed[]> {
+    const response = await api.get<Breed[]>('/breeds', { params })
     return response.data
   },
 

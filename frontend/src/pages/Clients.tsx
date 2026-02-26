@@ -5,12 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, UserPlus, Phone, Mail, MapPin, Star, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, UserPlus, Phone, Mail, MapPin, Star, ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react'
 import { formatRUT } from '@/lib/utils'
+import { ClientFormDialog } from '@/components/clients/ClientFormDialog'
+import { ClientDeleteDialog } from '@/components/clients/ClientDeleteDialog'
+import type { Client } from '@/types/client'
 
 export default function Clients() {
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
+  const [formDialogOpen, setFormDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<Client | undefined>()
+  const [mode, setMode] = useState<'create' | 'edit'>('create')
 
   const { data: clientsData, isLoading } = useQuery({
     queryKey: ['clients', page, searchTerm],
@@ -18,6 +25,23 @@ export default function Clients() {
   })
 
   const totalPages = clientsData ? Math.ceil(clientsData.total / 10) : 0
+
+  const handleCreate = () => {
+    setSelectedClient(undefined)
+    setMode('create')
+    setFormDialogOpen(true)
+  }
+
+  const handleEdit = (client: Client) => {
+    setSelectedClient(client)
+    setMode('edit')
+    setFormDialogOpen(true)
+  }
+
+  const handleDelete = (client: Client) => {
+    setSelectedClient(client)
+    setDeleteDialogOpen(true)
+  }
 
   return (
     <div className="space-y-6">
@@ -29,7 +53,7 @@ export default function Clients() {
             {clientsData?.total || 0} clientes registrados
           </p>
         </div>
-        <Button size="lg" className="gap-2 shadow-lg">
+        <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreate}>
           <UserPlus className="h-5 w-5" />
           Nuevo Cliente
         </Button>
@@ -84,7 +108,7 @@ export default function Clients() {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-3">
                   {client.phone && (
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Phone className="h-4 w-4 text-gray-400" />
@@ -104,12 +128,33 @@ export default function Clients() {
                     </div>
                   )}
                   {Number(client.discount) > 0 && (
-                    <div className="mt-3 pt-3 border-t">
+                    <div>
                       <Badge variant="success" className="text-xs">
                         {client.discount}% descuento
                       </Badge>
                     </div>
                   )}
+
+                  <div className="flex gap-2 pt-3 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-2"
+                      onClick={() => handleEdit(client)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                      Editar
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="flex-1 gap-2"
+                      onClick={() => handleDelete(client)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Eliminar
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -158,12 +203,28 @@ export default function Clients() {
             <p className="text-gray-500 mb-4">
               Intenta con otro término de búsqueda o registra un nuevo cliente
             </p>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleCreate}>
               <UserPlus className="h-4 w-4" />
               Registrar Primer Cliente
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {/* Dialogs */}
+      <ClientFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        client={selectedClient}
+        mode={mode}
+      />
+
+      {selectedClient && (
+        <ClientDeleteDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          client={selectedClient}
+        />
       )}
     </div>
   )

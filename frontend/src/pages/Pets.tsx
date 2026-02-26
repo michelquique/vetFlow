@@ -5,12 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, PawPrint, Calendar, Heart, Skull, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, PawPrint, Calendar, Heart, Skull, ChevronLeft, ChevronRight, Edit2, Trash2, Eye } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { PetFormDialog } from '@/components/pets/PetFormDialog'
+import { PetDeleteDialog } from '@/components/pets/PetDeleteDialog'
+import type { Pet } from '@/types/pet'
 
 export default function Pets() {
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
+  const [formDialogOpen, setFormDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedPet, setSelectedPet] = useState<Pet | undefined>()
+  const [mode, setMode] = useState<'create' | 'edit'>('create')
 
   const { data: petsData, isLoading } = useQuery({
     queryKey: ['pets', page, searchTerm],
@@ -36,6 +43,23 @@ export default function Pets() {
     return sizes[size] || size
   }
 
+  const handleCreate = () => {
+    setSelectedPet(undefined)
+    setMode('create')
+    setFormDialogOpen(true)
+  }
+
+  const handleEdit = (pet: Pet) => {
+    setSelectedPet(pet)
+    setMode('edit')
+    setFormDialogOpen(true)
+  }
+
+  const handleDelete = (pet: Pet) => {
+    setSelectedPet(pet)
+    setDeleteDialogOpen(true)
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -46,7 +70,7 @@ export default function Pets() {
             {petsData?.total || 0} mascotas registradas
           </p>
         </div>
-        <Button size="lg" className="gap-2 shadow-lg">
+        <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreate}>
           <PawPrint className="h-5 w-5" />
           Nueva Mascota
         </Button>
@@ -164,6 +188,27 @@ export default function Pets() {
                       <span>Nació {formatDate(pet.birthDate)}</span>
                     </div>
                   )}
+
+                  <div className="flex gap-2 pt-3 border-t mt-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-2"
+                      onClick={() => handleEdit(pet)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                      Editar
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="flex-1 gap-2"
+                      onClick={() => handleDelete(pet)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Eliminar
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -212,12 +257,28 @@ export default function Pets() {
             <p className="text-gray-500 mb-4">
               Intenta con otro término de búsqueda o registra una nueva mascota
             </p>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleCreate}>
               <PawPrint className="h-4 w-4" />
               Registrar Primera Mascota
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {/* Dialogs */}
+      <PetFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        pet={selectedPet}
+        mode={mode}
+      />
+
+      {selectedPet && (
+        <PetDeleteDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          pet={selectedPet}
+        />
       )}
     </div>
   )

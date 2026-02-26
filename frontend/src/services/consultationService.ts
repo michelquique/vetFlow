@@ -7,6 +7,11 @@ import type {
 } from '@/types/consultation'
 import type { PaginatedResponse } from '@/types/api'
 
+export interface ConsultationCountResponse {
+  total: number
+  today: number
+}
+
 export const consultationService = {
   async getAll(params: SearchConsultationDto = {}): Promise<PaginatedResponse<Consultation>> {
     const response = await api.get<PaginatedResponse<Consultation>>('/consultations', { params })
@@ -18,8 +23,8 @@ export const consultationService = {
     return response.data
   },
 
-  async getRecent(): Promise<Consultation[]> {
-    const response = await api.get<Consultation[]>('/consultations/recent')
+  async getRecent(limit: number = 10): Promise<Consultation[]> {
+    const response = await api.get<Consultation[]>('/consultations/recent', { params: { limit } })
     return response.data
   },
 
@@ -37,13 +42,8 @@ export const consultationService = {
     await api.delete(`/consultations/${id}`)
   },
 
-  async count(): Promise<number> {
-    const response = await api.get<number>('/consultations/count')
-    return response.data
-  },
-
-  async countToday(): Promise<number> {
-    const response = await api.get<number>('/consultations/count/today')
+  async getCount(): Promise<ConsultationCountResponse> {
+    const response = await api.get<ConsultationCountResponse>('/consultations/count')
     return response.data
   },
 }

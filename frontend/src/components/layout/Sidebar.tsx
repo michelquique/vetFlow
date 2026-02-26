@@ -10,6 +10,8 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
+  Activity,
+  BookOpen,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -25,6 +27,8 @@ const navigation = [
   { name: 'Clientes', href: '/clients', icon: Users, color: 'text-purple-600' },
   { name: 'Mascotas', href: '/pets', icon: PawPrint, color: 'text-orange-600' },
   { name: 'Consultas', href: '/consultations', icon: Stethoscope, color: 'text-red-600' },
+  { name: 'Doctores', href: '/doctors', icon: Activity, color: 'text-emerald-600' },
+  { name: 'Catálogo', href: '/catalog', icon: BookOpen, color: 'text-pink-600' },
   { name: 'Agenda', href: '/schedule', icon: Calendar, color: 'text-cyan-600' },
   { name: 'Recordatorios', href: '/reminders', icon: Bell, color: 'text-yellow-600' },
   { name: 'Reportes', href: '/reports', icon: FileText, color: 'text-gray-600' },

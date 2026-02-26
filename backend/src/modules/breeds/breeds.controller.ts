@@ -14,6 +14,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { BreedsService } from './breeds.service';
 import { CreateBreedDto } from './dto/create-breed.dto';
@@ -35,12 +36,30 @@ export class BreedsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Obtener todas las razas o filtrar por especie' })
+  @ApiOperation({ summary: 'Obtener todas las razas o filtrar/buscar por especie' })
   @ApiResponse({ status: 200, description: 'Lista de razas' })
-  findAll(@Query('speciesTypeId') speciesTypeId?: string) {
+  @ApiQuery({ name: 'speciesTypeId', required: false, description: 'Filtrar por ID de especie' })
+  @ApiQuery({ name: 'search', required: false, description: 'Buscar por nombre de raza' })
+  @ApiQuery({ name: 'limit', required: false, description: 'Límite de resultados' })
+  findAll(
+    @Query('speciesTypeId') speciesTypeId?: string,
+    @Query('search') search?: string,
+    @Query('limit') limit?: string,
+  ) {
+    // Si hay búsqueda o límite, usar el método search
+    if (search || limit) {
+      return this.breedsService.search({
+        speciesTypeId,
+        search,
+        limit: limit ? parseInt(limit, 10) : undefined,
+      });
+    }
+    
+    // Si solo hay speciesTypeId, usar el método existente
     if (speciesTypeId) {
       return this.breedsService.findBySpecies(speciesTypeId);
     }
+    
     return this.breedsService.findAll();
   }
 

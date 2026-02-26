@@ -36,9 +36,4 @@ export const petService = {
     const response = await api.get<number>('/pets/count')
     return response.data
   },
-
-  async countAlive(): Promise<number> {
-    const response = await api.get<number>('/pets/count/alive')
-    return response.data
-  },
 }

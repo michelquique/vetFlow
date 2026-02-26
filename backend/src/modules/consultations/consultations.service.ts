@@ -30,6 +30,7 @@ export class ConsultationsService {
     const {
       page = 1,
       limit = 10,
+      search,
       petId,
       clientId,
       doctorId,
@@ -45,6 +46,15 @@ export class ConsultationsService {
       .leftJoinAndSelect('consultation.pet', 'pet')
       .leftJoinAndSelect('consultation.client', 'client')
       .leftJoinAndSelect('consultation.doctor', 'doctor');
+
+    // Búsqueda por texto (nombre de mascota, cliente, doctor, motivo o diagnóstico)
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      queryBuilder.andWhere(
+        '(pet.name ILIKE :search OR client.name ILIKE :search OR doctor.name ILIKE :search OR consultation.reason ILIKE :search OR consultation.diagnosis ILIKE :search OR CAST(consultation.consultationNumber AS TEXT) ILIKE :search)',
+        { search: searchTerm },
+      );
+    }
 
     if (petId) {
       queryBuilder.andWhere('consultation.petId = :petId', { petId });

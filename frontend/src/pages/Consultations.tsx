@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { consultationService } from '@/services/consultationService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,16 +15,45 @@ import {
   ChevronRight,
   AlertCircle,
   CheckCircle,
+  Eye,
+  Edit2,
+  Trash2,
+  ClipboardList,
 } from 'lucide-react'
 import { formatDate, formatCurrency } from '@/lib/utils'
+import { ConsultationFormDialog } from '@/components/consultations/ConsultationFormDialog'
+import { ConsultationViewDialog } from '@/components/consultations/ConsultationViewDialog'
+import { ConsultationDeleteDialog } from '@/components/consultations/ConsultationDeleteDialog'
+import type { Consultation } from '@/types/consultation'
 
 export default function Consultations() {
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [formDialogOpen, setFormDialogOpen] = useState(false)
+  const [viewDialogOpen, setViewDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | undefined>()
+  const [mode, setMode] = useState<'create' | 'edit'>('create')
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm)
+      setPage(1) // Reset to page 1 on new search
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
 
   const { data: consultationsData, isLoading } = useQuery({
-    queryKey: ['consultations', page, searchTerm],
-    queryFn: () => consultationService.getAll({ page, limit: 10, search: searchTerm }),
+    queryKey: ['consultations', page, debouncedSearch],
+    queryFn: () => consultationService.getAll({ page, limit: 10, search: debouncedSearch }),
+  })
+
+  // Get consultation count (total and today)
+  const { data: countData } = useQuery({
+    queryKey: ['consultations-count'],
+    queryFn: () => consultationService.getCount(),
   })
 
   const totalPages = consultationsData ? Math.ceil(consultationsData.total / 10) : 0
@@ -38,6 +67,28 @@ export default function Consultations() {
     return statuses[status] || statuses.Active
   }
 
+  const handleCreate = () => {
+    setSelectedConsultation(undefined)
+    setMode('create')
+    setFormDialogOpen(true)
+  }
+
+  const handleView = (consultation: Consultation) => {
+    setSelectedConsultation(consultation)
+    setViewDialogOpen(true)
+  }
+
+  const handleEdit = (consultation: Consultation) => {
+    setSelectedConsultation(consultation)
+    setMode('edit')
+    setFormDialogOpen(true)
+  }
+
+  const handleDelete = (consultation: Consultation) => {
+    setSelectedConsultation(consultation)
+    setDeleteDialogOpen(true)
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -45,23 +96,23 @@ export default function Consultations() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Consultas Médicas</h1>
           <p className="text-gray-500 mt-1">
-            {consultationsData?.total || 0} consultas registradas
+            Gestión de consultas veterinarias
           </p>
         </div>
-        <Button size="lg" className="gap-2 shadow-lg">
+        <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreate}>
           <Stethoscope className="h-5 w-5" />
           Nueva Consulta
         </Button>
       </div>
 
       {/* Search and Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <Card className="border-0 shadow-lg lg:col-span-2">
           <CardContent className="pt-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <Input
-                placeholder="Buscar por mascota, cliente, doctor..."
+                placeholder="Buscar por mascota, cliente, doctor, motivo..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-12 text-base"
@@ -76,11 +127,27 @@ export default function Consultations() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Consultas Hoy</p>
                 <p className="text-3xl font-bold text-gray-900 mt-1">
-                  {consultationsData?.total || 0}
+                  {countData?.today || 0}
                 </p>
               </div>
               <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
                 <Stethoscope className="h-7 w-7 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Consultas</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">
+                  {countData?.total || 0}
+                </p>
+              </div>
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-md">
+                <ClipboardList className="h-7 w-7 text-white" />
               </div>
             </div>
           </CardContent>
@@ -103,7 +170,7 @@ export default function Consultations() {
               return (
                 <Card
                   key={consultation.id}
-                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -208,6 +275,37 @@ export default function Consultations() {
                         )}
                       </div>
                     )}
+
+                    {/* Action Buttons */}
+                    <div className="mt-4 pt-4 border-t flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 gap-2"
+                        onClick={() => handleView(consultation)}
+                      >
+                        <Eye className="h-4 w-4" />
+                        Ver Detalles
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 gap-2"
+                        onClick={() => handleEdit(consultation)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                        Editar
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex-1 gap-2"
+                        onClick={() => handleDelete(consultation)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Eliminar
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               )
@@ -257,12 +355,35 @@ export default function Consultations() {
             <p className="text-gray-500 mb-4">
               Intenta con otro término de búsqueda o registra una nueva consulta
             </p>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleCreate}>
               <Stethoscope className="h-4 w-4" />
               Registrar Primera Consulta
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {/* Dialogs */}
+      <ConsultationFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        consultation={selectedConsultation}
+        mode={mode}
+      />
+
+      {selectedConsultation && (
+        <>
+          <ConsultationViewDialog
+            open={viewDialogOpen}
+            onOpenChange={setViewDialogOpen}
+            consultation={selectedConsultation}
+          />
+          <ConsultationDeleteDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            consultation={selectedConsultation}
+          />
+        </>
       )}
     </div>
   )

@@ -6,6 +6,7 @@ import {
   IsUUID,
   IsDateString,
   IsEnum,
+  IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
@@ -31,6 +32,14 @@ export class SearchConsultationDto {
   @IsInt()
   @Min(1)
   limit?: number = 10;
+
+  @ApiPropertyOptional({
+    description: 'Buscar por nombre de mascota, cliente o doctor',
+    example: 'Luna',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
 
   @ApiPropertyOptional({ description: 'Filtrar por mascota', example: 'uuid' })
   @IsOptional()

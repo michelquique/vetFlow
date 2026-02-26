@@ -7,6 +7,8 @@ import Admission from './pages/Admission'
 import Clients from './pages/Clients'
 import Pets from './pages/Pets'
 import Consultations from './pages/Consultations'
+import Doctors from './pages/Doctors'
+import Catalog from './pages/Catalog'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth()
@@ -41,6 +43,8 @@ function App() {
           <Route path="clients" element={<Clients />} />
           <Route path="pets" element={<Pets />} />
           <Route path="consultations" element={<Consultations />} />
+          <Route path="doctors" element={<Doctors />} />
+          <Route path="catalog" element={<Catalog />} />
           <Route path="schedule" element={<div className="text-2xl font-bold">Agenda - Próximamente</div>} />
           <Route path="reminders" element={<div className="text-2xl font-bold">Recordatorios - Próximamente</div>} />
           <Route path="reports" element={<div className="text-2xl font-bold">Reportes - Próximamente</div>} />

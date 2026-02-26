@@ -52,4 +52,31 @@ Contraseña: admin123
 ✅ 45+ endpoints REST
 ✅ UI/UX optimizado con TailwindCSS
 
+## 📦 Migración de Datos
+
+¿Vienes del sistema antiguo KeySoft? **Tenemos un sistema completo de migración automática:**
+
+```bash
+# 1. Crear backup de seguridad
+cd backend
+./scripts/backup-database.sh
+
+# 2. Validar datos (sin modificar BD)
+npm run migrate:keysoft:dry
+
+# 3. Ejecutar migración
+npm run migrate:keysoft
+```
+
+**Migrará automáticamente:**
+- ✅ 11,635 clientes
+- ✅ 17,379 mascotas
+- ✅ 46,055 consultas históricas
+- ✅ 5 doctores
+- ✅ 74 razas y 3 tipos de especies
+
+📖 **Guía completa:** Ver [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
+
+📚 **Documentación técnica:** Ver [backend/src/migration/README.md](./backend/src/migration/README.md)
+
 Para más información, ver la documentación completa en el proyecto.
